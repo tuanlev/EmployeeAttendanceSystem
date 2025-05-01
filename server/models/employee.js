@@ -7,41 +7,41 @@ const EmployeeSchema = new Schema({
         type: String,
         required: true,
     },
-    email: {
-        type: String,
-        required: true,
-        unique: true,
-        validate: {
-            validator: (email) => {
-                const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                return emailRegex.test(email);
+    // email: {
+    //     type: String,
+    //     required: true,
+    //     unique: true,
+    //     validate: {
+    //         validator: (email) => {
+    //             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    //             return emailRegex.test(email);
 
-            }
-            , message: "Invalid email format"
-        }
-    },
-    phoneNumber: {
-        type: String,
-        required: true,
-        unique: true,
-        validate: {
-            validator: (phoneNumber) => {
-                const phoneRegex = /^\d{10}$/; // Assuming a 10-digit phone number
-                return phoneRegex.test(phoneNumber);
-            }
-            , message: "Invalid phone number format"
-        }
+    //         }
+    //         , message: "Invalid email format"
+    //     }
+    // },
+    // phoneNumber: {
+    //     type: String,
+    //     required: true,
+    //     unique: true,
+    //     validate: {
+    //         validator: (phoneNumber) => {
+    //             const phoneRegex = /^\d{10}$/; // Assuming a 10-digit phone number
+    //             return phoneRegex.test(phoneNumber);
+    //         }
+    //         , message: "Invalid phone number format"
+    //     }
         
-    },
+    // },
     shiftId: {
         type: Schema.Types.ObjectId,
         ref: "Shift",
-        required: true
+        
     },
     positionId: {
         type: Schema.Types.ObjectId,
         ref: "Position",
-        required: true
+       
     },
     
 

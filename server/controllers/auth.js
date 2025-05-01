@@ -4,6 +4,12 @@ import MD5 from 'crypto-js/md5'
 import AccountModel from "../models/account.js";
 import EmployeeModel from "../models/employee.js";
 import jsonwebtoken, { JsonWebTokenError } from "jsonwebtoken";
+import {
+	ReasonPhrases,
+	StatusCodes,
+	getReasonPhrase,
+	getStatusCode,
+} from 'http-status-codes';
 export const register = async (req, res) => {
     try {
         let {username,  password, role, departmentAccess,employeeId} = req.body; 
@@ -15,21 +21,22 @@ export const register = async (req, res) => {
         validateUsername(username);
         const employee = await EmployeeModel.findOne({_id:employeeId})
         if (employee == null) throw new Error('Employee was not found')
-        accountIntance = await AccountModel.create({
+            accountIntance = await AccountModel.create({
             username,
             password:MD5(password).toString(),
             role,
             departmentAccess,
             employeeId
         });
-        successResponse({
-            res,
-            status:201,
-            data:employee
+        res.status(StatusCodes.CREATED).json({
+            message: getReasonPhrase(StatusCodes.CREATED),
+            data: accountIntance,
         })
-
     } catch (error) {
-        return errorResponse(res, 400, error.message);
+        res.status(StatusCodes.BAD_REQUEST).json({
+            message: getReasonPhrase(StatusCodes.BAD_REQUEST),
+            error: error.message,
+        })
     }
     
 }
@@ -48,8 +55,13 @@ export const signin  = async (req, res) => {
 
         if (!!employee) throw new Error('Employee was not found');
 
-        res.set('authorization',jsonwebtoken.sign(employee,process.env.API_KEY,{
-            expiredIn:'30m'
+        res.set('authorization',jsonwebtoken.sign({
+            id:accountIntance._id,
+            role:accountIntance.role,
+            departmentAccess:accountIntance.departmentAccess,
+            employeeId:accountIntance.employeeId
+        },process.env.API_KEY,{
+            expiredIn:'3d'
         }))
         successResponse({
             res,

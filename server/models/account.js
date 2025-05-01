@@ -2,12 +2,6 @@ import { Schema } from "mongoose";
 import { type } from "os";
 
 const AccountSchema = new Schema({
-    employeeId: {
-        type: Schema.Types.ObjectId,
-        ref: "Employee",
-        required: true,
-        unique: true,
-    },
     username: {
         type: String,
         trim: true,
