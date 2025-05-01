@@ -6,11 +6,6 @@ const PositionSchema = new Schema({
         unique: true,
         trim: true,
     },
-    departmentId: {
-        type: Schema.Types.ObjectId,
-        ref: "Department",
-        required: true,
-    },
     description: {
         type: String,
         trim: true,
@@ -18,11 +13,7 @@ const PositionSchema = new Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
+    }
 });
 const Position = mongoose.model("position", PositionSchema);
 export default Position;
