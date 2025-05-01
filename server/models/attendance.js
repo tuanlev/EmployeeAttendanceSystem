@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 import { type } from "os";
 
 const AttendanceSchema = new Schema({
-    employeeId: {
+    employeeID: {
         type: Schema.Types.ObjectId,
         ref: "Employee",
         required: true,

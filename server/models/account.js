@@ -20,7 +20,7 @@ const AccountSchema = new Schema({
         //     message: "Password must be at least 8 characters long and contain at least one letter and one number"
         // }
     },
-    employeeId:{
+    employeeID:{
         type: Schema.Types.ObjectId,
         unique: true,
         require:true

@@ -43,6 +43,10 @@ const EmployeeSchema = new Schema({
         ref: "Position",
        
     },
+    departmentId: {
+        type: Schema.Types.ObjectId,
+        ref: "Department",     
+    },
     
 
 });
