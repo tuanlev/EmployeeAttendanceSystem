@@ -1,3 +1,4 @@
+import { maxHeaderSize } from "http";
 import mongoose, { Schema } from "mongoose";
 const ShiftsSchema = new Schema({
     name: {
@@ -44,13 +45,23 @@ const ShiftsSchema = new Schema({
             },
             required: true
         },
+        isNextDay: {
+            type: Boolean,
+            default: false,
+            description: "If true, the end time is on the next day."
+        }
 
     },
     gracePeriod: {
         type: Number,
         default: 0,
         description: "Maximum number of minutes an employee is allowed to be late without being marked late or penalized."
-    }
+    },
+    maxOverTime: {
+        type: Number,
+        default: 0,
+        description: "Maximum number of minutes an employee is allowed to work overtime without being penalized."
+    },
 });
 const Shifts = mongoose.model("shift", ShiftsSchema);
 export default Shifts;
