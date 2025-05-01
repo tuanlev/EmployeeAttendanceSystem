@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose,{ Schema } from "mongoose";
 import { type } from "os";
 
 const AccountSchema = new Schema({
@@ -22,8 +22,7 @@ const AccountSchema = new Schema({
     },
     employeeID:{
         type: Schema.Types.ObjectId,
-        unique: true,
-        require:true
+        ref: "Employee",
     },
     role: {
         type: Number,

@@ -1,9 +1,8 @@
-import { successResponse,errorResponse } from "../utils/responeHandle";
-import { validateEmail, validatePassword, validateUsername,validatePhoneNumber } from "../utils/validation";
-import MD5 from 'crypto-js/md5'
+import { validateEmail, validatePassword, validateUsername,validatePhoneNumber } from "../utils/validation.js";
+import MD5 from 'crypto-js/md5.js'
 import AccountModel from "../models/account.js";
 import EmployeeModel from "../models/employee.js";
-import jsonwebtoken, { JsonWebTokenError } from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken";
 import {
 	ReasonPhrases,
 	StatusCodes,
@@ -12,22 +11,24 @@ import {
 } from 'http-status-codes';
 export const register = async (req, res) => {
     try {
-        let {username,  password, role, departmentAccess,employeeId} = req.body; 
+        let {username,  password, role, departmentAccess,employeeID} = req.body; 
             // ,phoneNumber, email
-        
+        let accountI = {}
+        if (username) accountI.username = username
+        if (password) accountI.password = password
+        console.log('accountI', role, departmentAccess, employeeID)
+        accountI.role = role || 0;
+        if (departmentAccess) accountI.departmentAccess = departmentAccess || [];
+        if (employeeID) accountI.employeeID = employeeID;
+
+        // if (email) email = email.trim().toLowerCase();
+        // if (phoneNumber) phoneNumber = phoneNumber.trim().toLowerCase();
         // validateEmail(email);
         // valilatePhoneNumber(phoneNumber);
-        validatePassword(password);
-        validateUsername(username);
-        const employee = await EmployeeModel.findOne({_id:employeeId})
-        if (employee == null) throw new Error('Employee was not found')
-            accountIntance = await AccountModel.create({
-            username,
-            password:MD5(password).toString(),
-            role,
-            departmentAccess,
-            employeeId
-        });
+        validatePassword(accountI.password);
+        validateUsername(accountI.username);
+        accountI.password = MD5(accountI.password).toString()
+        let accountIntance = await AccountModel.create(accountI);
         res.status(StatusCodes.CREATED).json({
             message: getReasonPhrase(StatusCodes.CREATED),
             data: accountIntance,
@@ -42,34 +43,36 @@ export const register = async (req, res) => {
 }
 export const signin  = async (req, res) => {
     try {
-        const {username, password} = req.body;
+        let {username, password} = req.body;
         validateUsername(username);
         validatePassword(password);
+        password = MD5(password).toString()
+        console.log(password)
         const accountIntance = AccountModel.findOne({
             username,
-            password:MD5(password).toString()
+            password
         })
-        if (!!accountIntance) throw new Error('sai tai khoan hoac mk....');
+        if (!accountIntance) throw new Error('sai tai khoan hoac mk....');
 
         const employee = await EmployeeModel.findOne({_id:accountIntance.employeeId})
-
-        if (!!employee) throw new Error('Employee was not found');
 
         res.set('authorization',jsonwebtoken.sign({
             id:accountIntance._id,
             role:accountIntance.role,
             departmentAccess:accountIntance.departmentAccess,
             employeeId:accountIntance.employeeId
-        },process.env.API_KEY,{
-            expiredIn:'3d'
-        }))
-        successResponse({
-            res,
-            status:201,
-            data:employee
+        },process.env.JWT_SECRET,{ expiresIn: 60 * 60 }))
+        res.status(StatusCodes.OK).json({
+            message: getReasonPhrase(StatusCodes.OK),
+            data: {
+                employee,
+            },
         })
+        
     }
     catch (e) {
-        errorResponse(res,404,e.message)
-    }
+        res.status(StatusCodes.BAD_REQUEST).json({
+            message: getReasonPhrase(StatusCodes.BAD_REQUEST),
+            error: e.message,
+        })}
 } 
